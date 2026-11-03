@@ -1,0 +1,367 @@
+/* =========================================================================
+   ATLAS · SISTEMA
+   Una sola tipografía (Inter Tight, incluida en /fonts), una sola escala de
+   tamaños y los componentes nuevos (parque dividido, Participá, Compará,
+   guía). Se carga último: lo que está acá manda.
+
+   ESCALA TIPOGRÁFICA (usar SOLO estos tamaños)
+   ─────────────────────────────────────────────────────────────────────────
+   --fs-label   11px  etiqueta en mayúsculas (kicker, tag, estado)
+   --fs-small   13px  meta, fuentes, chips, botones chicos, leyendas
+   --fs-body    15px  texto de tarjetas y paneles
+   --fs-lead    17px  bajadas e introducciones
+   --fs-h3      24px  título de tarjeta, panel o paso
+   --fs-h2      clamp 30–46px  título de sección
+   --fs-h1      clamp 34–68px  título de pantalla
+   --fs-display clamp 40–92px  portada del recorrido
+   Pesos: 400 (texto) · 500 (títulos) · 600 (énfasis y etiquetas).
+   ========================================================================= */
+@font-face{
+  font-family:"Inter Tight";
+  src:url("../fonts/InterTight-var.woff") format("woff");
+  font-weight:100 900;font-style:normal;font-display:swap;
+}
+:root{
+  --fs-label:11px; --fs-small:13px; --fs-body:15px; --fs-lead:17px; --fs-h3:24px;
+  --fs-h2:clamp(30px,3.4vw,46px); --fs-h1:clamp(34px,5vw,68px); --fs-display:clamp(40px,7vw,92px);
+  --track-label:.08em;
+  --col:380px;        /* ancho de la tarjeta interactiva del parque */
+  --dockw:52px;       /* columna de íconos */
+  --top:58px;         /* alto de la barra superior */
+}
+
+/* ---------- Una sola familia, también dentro de los SVG ---------- */
+html,body,button,input,select,textarea{font-family:var(--sans)}
+svg text,svg tspan,svg textPath{font-family:var(--sans) !important;font-style:normal !important}
+svg text[font-weight="700"]{font-weight:600}
+em,i{font-style:normal}
+
+/* ---------- Escala aplicada ---------- */
+.kicker,.lsub,.tag,.half-badge,.doc-type,.ar-card-cat,.sug-note,.chapter .num,.step .num,.cmp-badge,.guide-card .kicker,.prio,.ficha .pill,.badge{
+  font-size:var(--fs-label);letter-spacing:var(--track-label);font-weight:600;text-transform:uppercase;font-family:var(--sans)}
+.small,.src,.hint,.chip,.mono,.half-meta,.ar-meta,.ar-card-meta,.ficha .ft small,.readout,.list,.bars-axis,.field span,.city-legend,
+.u-hint,.u-skip,.zoom-ctrl button,.minimap figcaption,.to-archivo,.to-recorrido,.switch,.back-umbral,.whatis,.skip-intro,.topnav button,
+.pin-types button,.zone-bar button,.half-why,.evbar button,.ar-card-go,.doc-go,.lect p,.sel,.tension,.cmp-legend,.cmp-key{font-size:var(--fs-small)}
+.mono{font-family:var(--sans)}
+body,.chapter p,.half-body,.ar-card-why,.fbody,.tip,.detail,.lcard p,.modal p,.ficha .ft,.cmp-card p,.guide-card p,.pin-steps,.list li{font-size:var(--fs-body)}
+.istep p,.city-hello p,.sec-lead,.adt p,.step p{font-size:var(--fs-lead)}
+.step p{font-size:var(--fs-body)}
+.chapter h3,.step h2,.lcard h3,.modal h3,.cmp-card h3,.cmp-panel h3,.guide-card h3,.ar-card b,.lq{font-size:var(--fs-h3);line-height:1.1;font-weight:500;letter-spacing:-.01em}
+.istep h2,.u-doors-title,.half-title,.sec-head h2,.adt h3,.ar-dots .adt h3{font-size:var(--fs-h2);line-height:1.04;font-weight:500;letter-spacing:-.02em}
+.u-title,.ar-title{font-size:var(--fs-h1);line-height:1;font-weight:500;letter-spacing:-.025em}
+.city-hello h2{font-size:var(--fs-display);line-height:.95;font-weight:500;letter-spacing:-.03em}
+.btn{font-size:var(--fs-body);font-weight:600}
+.btn.small{font-size:var(--fs-small)}
+.tag{font-size:10px;padding:1px 6px}
+b,strong{font-weight:600}
+
+/* ---------- Sin saltos: el texto aparece por opacidad, no se desplaza ---------- */
+@keyframes rise{from{opacity:0}to{opacity:1}}
+.istep,.adt,.step{transform:none !important}
+.u-mirada.out{transform:none}
+.u-doors{transform:none}
+
+/* ---------- Barra superior ---------- */
+.topbar{height:var(--top);padding-top:0;padding-bottom:0}
+.brand{gap:10px}
+.brand .symbol{width:35px;height:35px;display:block}
+.topnav{gap:4px;margin-left:auto}
+.topnav button{color:var(--ink-2);border-radius:99px;padding:7px 12px;display:inline-flex;align-items:center;gap:7px;transition:background .2s,color .2s}
+.topnav button:hover{background:var(--soft);color:var(--ink)}
+.topnav button.on{background:#111;color:#fff}
+.now-dot{width:7px;height:7px;border-radius:50%;background:var(--acento);box-shadow:0 0 0 2px #111 inset}
+.topnav button.on .now-dot{box-shadow:none}
+body[data-view="recorrido"] .switch{margin-left:0}
+.mirada-dot{border:1px solid #111}
+
+/* Fundido entre vistas (reemplaza al símbolo que crecía) */
+.veil{position:fixed;inset:0;z-index:100;background:#fff;opacity:0;pointer-events:none;transition:opacity .18s ease}
+.veil.on{opacity:1}
+
+/* ---------- Umbral: la palabra de la mirada es el botón ---------- */
+.hl-btn{border:0;cursor:pointer;font:inherit;font-weight:600;letter-spacing:inherit;text-transform:inherit;display:inline-flex;align-items:center;gap:6px;
+  padding:3px 9px;border-radius:6px;color:#111;box-shadow:0 0 0 1.5px #111 inset;transition:transform .15s}
+.hl-btn svg{width:13px;height:13px}
+.hl-btn:hover{transform:translateY(-1px)}
+.hl-btn:focus-visible{outline:2px solid #111;outline-offset:2px}
+.u-doors-head .kicker{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;font-size:var(--fs-body);text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink-2)}
+.u-doors-head .hl-btn{font-size:var(--fs-body);padding:5px 12px}
+
+/* ---------- Señalética y rótulos de planos (tamaño constante en pantalla) ---------- */
+.k{transform:scale(var(--k,1))}
+.sign-t{font-size:12px;fill:#111}
+.sign-t .sign-sub{font-weight:400;fill:#44443f}
+.sign rect{filter:drop-shadow(0 1px 2px #0000001a)}
+.sign.hover-only{opacity:0;transition:opacity .2s;pointer-events:none}
+.sign.hover-only.on{opacity:1}
+.mlabel-t{font-size:11px;fill:#44443f;font-weight:500;paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.mlabel.street .mlabel-t{font-size:11px;letter-spacing:.06em;text-transform:uppercase;fill:#77776f}
+.mlabel.street.av .mlabel-t{fill:#111;font-weight:600}
+.mlabel.rail .mlabel-t{font-size:11px;letter-spacing:.06em;text-transform:uppercase;fill:#111;font-weight:600;stroke-width:7px}
+.mlabel.hito .mlabel-t{fill:#111;font-weight:600}
+.mlabel.zona .mlabel-t{fill:#111;font-weight:500;font-size:12px}
+svg.panning{cursor:grabbing}
+/* Nivel de detalle (lo pone A.panZoom según el zoom) */
+svg[data-lod="mid"] .mlabel.zona,
+svg[data-lod="far"] .mlabel.zona,
+svg[data-lod="far"] .mlabel.street:not(.av){display:none}
+
+/* ---------- Mapa de la ciudad ---------- */
+/* Rótulos del mapa en px de pantalla (×--k), legibles a cualquier zoom */
+.city-av{font-size:calc(var(--k,1) * 12px);fill:#44443f;font-weight:500;paint-order:stroke;stroke:#fff;stroke-width:calc(var(--k,1) * 4px);stroke-linejoin:round}
+.city-av.rail{font-weight:600;fill:#111;text-transform:uppercase;letter-spacing:.08em;font-size:calc(var(--k,1) * 11px)}
+.city-river{font-size:calc(var(--k,1) * 13px);fill:#08b8f8;font-weight:500}
+.city-barrios text{font-size:calc(var(--k,1) * 10px);letter-spacing:.12em;fill:#8a8a84;font-weight:500;paint-order:stroke;stroke:#fff;stroke-width:calc(var(--k,1) * 3px)}
+.city-legend{gap:18px;align-items:center;background:#fffffff0;border:1px solid var(--faint);border-radius:99px;padding:8px 14px;color:var(--ink-2)}
+.city-legend span{display:inline-flex;align-items:center;gap:7px}
+.lg-dot{width:12px;height:12px;border-radius:50%;background:var(--c);border:1.2px solid #111;display:inline-block;flex:none}
+.lg-dot.lock{background:#e6e6e2;border:1.2px dashed #9d9d97;position:relative}
+.lg-dot.lock::after{content:"";position:absolute;left:3px;top:3px;width:4px;height:3px;border:1.2px solid #77776f;border-bottom:0;border-radius:3px 3px 0 0;transform:translateY(-1px)}
+.step-legend{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:8px}
+.step-legend li{display:flex;gap:10px;align-items:flex-start;font-size:var(--fs-small);color:var(--ink-2)}
+.step-legend .lg-dot{margin-top:3px}
+.row-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.park-shape{transition:none}
+.park-shape:hover{transform:none}
+.park-shape:hover path{filter:drop-shadow(0 0 0 #111)}
+.park-shape.st-pendiente:hover path{fill:#d2d2cd}
+.zoom-ctrl{background:#fff}
+
+/* =========================================================================
+   PARQUE ACTUAL · columna izquierda (íconos + tarjeta) | plano a la derecha
+   ========================================================================= */
+.park-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#fff}
+.park-map{position:absolute;top:calc(var(--top) + 14px);bottom:16px;right:var(--gutter);
+  left:calc(var(--gutter) + var(--dockw) + 14px + var(--col) + 22px);
+  border:1px solid var(--faint);border-radius:18px;overflow:hidden;background:#fff}
+.park-map > svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;transform:none;left:0;top:0}
+.park-overlay{position:absolute;inset:0;pointer-events:none;z-index:6;overflow:hidden}
+.park-overlay > *{pointer-events:auto}
+.park-map .tip{z-index:30}
+
+.map-head{position:absolute;top:12px;left:12px;z-index:7;pointer-events:none}
+.map-chip{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--faint);border-radius:99px;padding:6px 12px 6px 10px;box-shadow:0 2px 8px #0000000d}
+.map-chip i{width:10px;height:10px;border-radius:50%;border:1.2px solid #111;flex:none}
+.map-chip span{font-size:var(--fs-label);letter-spacing:var(--track-label);text-transform:uppercase;font-weight:600;color:var(--muted)}
+.map-chip b{font-size:var(--fs-small);font-weight:600}
+.map-zoom{position:absolute;top:12px;right:12px;z-index:7;display:flex;flex-direction:column;background:#fff;border:1px solid var(--faint);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px #0000000d}
+.map-zoom button{width:36px;height:34px;border:0;background:#fff;font-size:18px;line-height:1;cursor:pointer;color:#111}
+.map-zoom button + button{border-top:1px solid var(--faint)}
+.map-zoom button[data-z="fit"]{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.map-zoom button:hover{background:var(--soft)}
+.park-map .minimap{right:12px;bottom:12px;width:88px;background:#ffffffe6;border:1px solid var(--faint);border-radius:12px;padding:6px;z-index:7}
+.park-map .minimap svg{width:76px;height:64px}
+.park-map .minimap figcaption{text-align:center;color:var(--ink-2)}
+
+/* Íconos de capas: a la izquierda, los inactivos más tenues */
+.dock{left:var(--gutter);right:auto;bottom:auto;top:calc(50% + var(--top) / 2);transform:translateY(-50%);gap:6px;z-index:8;flex-direction:column;flex-wrap:nowrap;width:auto}
+.dock button{width:var(--dockw);height:42px;border-radius:12px;background:#fff;border:1px solid var(--faint);opacity:.38;transition:opacity .2s,border-color .2s,background .2s}
+.dock button:hover{opacity:.8;transform:none}
+.dock button.on{opacity:1;border-color:#111;background:color-mix(in srgb,var(--c) 26%,#fff);box-shadow:inset 4px 0 0 var(--c)}
+.dock button span{left:calc(100% + 10px);right:auto}
+.dock button.on span{display:none}
+.dock button.sug::after{border-color:#fff}
+
+/* Tarjetas: en la columna izquierda, al lado de los íconos (no pisan el plano) */
+.chapters{margin-top:-100vh;margin-top:-100svh;padding:0 0 0 calc(var(--gutter) + var(--dockw) + 14px);width:calc(var(--gutter) + var(--dockw) + 14px + var(--col))}
+.chapter{width:var(--col);max-width:100%;margin:0 0 60vh;background:#fff;border:1px solid var(--faint);border-left:0;border-radius:16px;padding:20px 20px 16px;opacity:.35;
+  box-shadow:inset 4px 0 0 var(--c),0 12px 30px #0000000a;backdrop-filter:none}
+.chapter:first-child{margin-top:calc(var(--top) + 18vh)}
+.chapter.on{opacity:1}
+.chapter .num{display:flex;align-items:center;gap:8px;color:var(--ink-2);margin:0 0 8px}
+.bullet{width:11px;height:11px;border-radius:50%;background:var(--c);border:1.2px solid #111;flex:none;display:inline-block}
+.chapter .lead{color:var(--ink-2);margin:0 0 8px}
+.chapter .how{font-size:var(--fs-small);color:var(--ink-2);border-left:3px solid var(--c);padding-left:8px;margin:0 0 12px}
+.chapter .sug-note{margin-left:auto}
+.chapter .to-archivo{display:inline-block;margin-top:12px;font-weight:600;text-decoration:none;border-bottom:1.5px solid #111;padding-bottom:1px}
+.stats{gap:6px}
+.stat{padding:9px 11px;border-radius:10px}
+.stat b{font-size:20px;font-weight:500}
+.stat span,.stat small{font-size:var(--fs-small)}
+.stat small{font-size:11px}
+.sens-legend{list-style:none;display:flex;gap:14px;padding:0;margin:8px 0;font-size:var(--fs-small);color:var(--ink-2)}
+.sens-legend li{display:flex;align-items:center;gap:6px}
+.sens-legend svg{width:16px;height:16px}
+.detail{border:1px solid var(--faint);border-radius:12px;padding:10px 12px;color:var(--ink-2);min-height:72px;line-height:1.45}
+.detail b{color:var(--ink)}
+.normas{margin-top:10px;border-top:1px solid var(--faint);padding-top:8px}
+.normas summary{cursor:pointer;font-size:var(--fs-small);font-weight:600}
+.inp{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:8px 10px;color:#111;font:inherit;font-size:var(--fs-small)}
+.readout b{font-size:18px;font-weight:600}
+.bars i{background:#d2d2cd}
+.bubble{font-weight:600}
+.toy .dial{max-height:220px}
+.toy .row{flex-wrap:wrap}
+.toy .row > .inp:first-child{flex:1 1 100%}
+
+/* =========================================================================
+   SECCIONES DEL RECORRIDO: Participá y Compará
+   ========================================================================= */
+.sec-head{max-width:760px;margin:0 0 28px}
+.sec-head .kicker{display:inline-block;background:var(--acento);color:#111;padding:3px 9px;border-radius:5px}
+.sec-head h2{margin:12px 0 10px}
+.sec-lead{color:var(--ink-2);margin:0;line-height:1.45}
+
+/* ---------- Participá ---------- */
+#participa{padding:110px var(--gutter) 70px;max-width:1500px;margin:0 auto;background:#fff;border-top:0}
+.participa-inner{display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:28px;align-items:start;max-width:none}
+.pin-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:18px}
+.pin-steps > li{display:flex;gap:12px;align-items:flex-start}
+.pin-steps > li > div{flex:1;min-width:0}
+.pin-steps b{display:block;font-weight:600;margin:2px 0 8px}
+.pn{flex:none;width:28px;height:28px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:var(--fs-small);font-weight:600}
+.pin-types{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0}
+.pin-types button{display:flex;align-items:center;gap:8px;border:1.5px solid var(--faint);background:#fff;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:500;color:#111}
+.pin-types button.on{border-color:#111;background:color-mix(in srgb,var(--c) 22%,#fff)}
+.pin-types svg{width:20px;height:20px}
+#participa .field{margin:0}
+#participa .field input{background:#fff;border:1.5px solid var(--rule);border-radius:12px;padding:12px 14px;font-size:var(--fs-body)}
+#participa .field input:focus{outline:none;border-color:#111}
+.pin-done{margin:18px 0 0;background:color-mix(in srgb,var(--publico) 22%,#fff);border:1.5px solid #111;border-radius:12px;padding:10px 12px;font-size:var(--fs-small)}
+.pin-list{list-style:none;padding:0;margin:18px 0 10px}
+.pin-list li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--faint);font-size:var(--fs-small);color:var(--ink-2)}
+.pin-list li svg{width:18px;height:18px;flex:none;margin-top:1px}
+.pin-list li b{color:#111}
+.pin-list .pin-count{border-top:0;font-weight:600;color:#111;padding-top:0}
+.participa-map{border:0;background:none;border-radius:0;overflow:visible;min-width:0}
+.zone-bar{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;scrollbar-width:thin}
+.zone-bar button{flex:none;border:1px solid var(--faint);background:#fff;border-radius:99px;padding:6px 12px;cursor:pointer;color:var(--ink-2);white-space:nowrap}
+.zone-bar button:hover{border-color:#111;color:#111}
+.zone-bar button.on{background:#111;color:#fff;border-color:#111}
+.pm-frame{position:relative;height:min(66vh,640px);min-height:380px;border:1px solid var(--faint);border-radius:18px;overflow:hidden;background:#fff}
+.pm-frame svg{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none}
+.pm-frame svg.panning{cursor:grabbing}
+.pm-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);margin:0;background:#111;color:#fff;border-radius:99px;padding:8px 14px;font-size:var(--fs-small);font-weight:500;pointer-events:none;white-space:nowrap}
+.pin{cursor:default}
+
+/* ---------- Compará ---------- */
+#compara{padding:90px var(--gutter) 40px;max-width:1500px;margin:0 auto;border-top:1px solid var(--faint)}
+.cmp-controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 16px;position:sticky;top:var(--top);z-index:12;background:#ffffffee;backdrop-filter:blur(8px);padding:10px 0}
+.cmp-controls .chips{margin:0}
+.cmp-hour{display:flex;align-items:center;gap:10px;font-size:var(--fs-small);color:var(--ink-2);flex:1;min-width:220px;max-width:420px}
+.cmp-hour input{flex:1;accent-color:#111}
+.cmp-hour b{font-size:var(--fs-body);color:#111;min-width:46px}
+.cmp-live{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cmp-card{border:1px solid var(--faint);border-radius:18px;padding:18px;background:#fff;box-shadow:inset 0 4px 0 var(--c)}
+.cmp-card header{margin-bottom:6px}
+.cmp-card h3{margin:8px 0 2px}
+.cmp-card header p{margin:0;color:var(--muted);font-size:var(--fs-small)}
+.cmp-badge{display:inline-block;background:var(--c);color:#111;border:1.2px solid #111;border-radius:5px;padding:2px 8px}
+.cmp-map{width:100%;height:auto;aspect-ratio:2/1;display:block;margin:6px 0 10px}
+.cmp-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0}
+.cmp-metrics div{border-top:2px solid #111;padding-top:8px}
+.cmp-metrics dt{font-size:var(--fs-small);color:var(--ink-2)}
+.cmp-metrics dd{margin:2px 0 0;font-size:26px;font-weight:500;line-height:1.1}
+.cmp-metrics small{font-size:var(--fs-small);color:var(--muted);font-weight:400}
+.cmp-note{grid-column:1 / -1;margin:0}
+.cmp-charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+.cmp-panel{border:1px solid var(--faint);border-radius:18px;padding:18px;background:#fff;min-width:0}
+.cmp-panel:first-child{grid-column:1 / -1}
+.cmp-panel header .num{display:flex;align-items:center;gap:8px;color:var(--ink-2);margin:0 0 6px;font-size:var(--fs-label);letter-spacing:var(--track-label);text-transform:uppercase;font-weight:600}
+.cmp-panel h3{margin:0 0 10px}
+.cmp-panel .chips{margin:0 0 10px}
+.cmp-legend,.cmp-key{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 8px;color:var(--ink-2)}
+.cmp-legend span,.cmp-key span{display:inline-flex;align-items:center;gap:6px}
+.cmp-legend i,.cmp-key i{width:14px;height:10px;border-radius:3px;background:var(--c);border:1.2px solid #111;display:inline-block}
+.cmp-chart{width:100%;height:240px;display:block;cursor:crosshair}
+.cmp-chart .ax{font-size:11px;fill:#77776f}
+.pbars{list-style:none;padding:0;margin:0 0 8px;display:flex;flex-direction:column;gap:10px}
+.pbars li{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;font-size:var(--fs-small)}
+.pbars p{margin:0 0 3px;display:flex;align-items:center;gap:8px}
+.pbars p i{height:12px;width:var(--w);background:var(--c);border:1.2px solid #111;border-radius:3px;transition:width .4s}
+.pbars p b{font-size:var(--fs-small);font-weight:600}
+.cmp-two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.lsub .sq,.cmp-panel .sq{display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--c);border:1.2px solid #111;margin-right:6px;vertical-align:-1px}
+.vbars{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.vbars li{display:grid;grid-template-columns:1fr 70px 26px;gap:8px;align-items:center;font-size:var(--fs-small)}
+.vbars li i{height:10px;width:var(--w);background:var(--c);border-radius:2px;display:block}
+.vbars li b{text-align:right;font-weight:600}
+.vbars li.both span{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.cmp-finding{margin:14px 0 8px;font-size:var(--fs-small);line-height:1.6;color:var(--ink-2)}
+.cmp-finding b{color:#111}
+.cmp-key .both-k{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+
+.rec-foot{padding:0 var(--gutter)}
+
+/* =========================================================================
+   GUÍA DE PRIMERA VEZ (Evidencia)
+   ========================================================================= */
+.guide{position:fixed;inset:0;z-index:200}
+.guide-spot{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(17,17,17,.55);transition:all .35s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.guide-card{position:fixed;background:#fff;border-radius:16px;padding:18px 18px 14px;box-shadow:0 20px 50px #00000033;transition:top .35s,left .35s}
+.guide-card .kicker{color:var(--muted);margin:0 0 6px}
+.guide-card h3{margin:0 0 6px}
+.guide-card p{margin:0 0 12px;color:var(--ink-2)}
+.guide-btns{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.guide-btns .btn{margin:0}
+.guide-dots{display:flex;gap:5px}
+.guide-dots i{width:6px;height:6px;border-radius:50%;background:#d2d2cd}
+.guide-dots i.on{background:#111}
+body.guiding{overflow:hidden}
+
+/* =========================================================================
+   RESPONSIVE
+   ========================================================================= */
+@media (max-width:1280px){
+  .live .hide-sm{display:none}
+}
+@media (max-width:1180px){
+  :root{--col:340px}
+}
+@media (max-width:1100px){
+  /* Barra de secciones del recorrido: segunda fila */
+  .topnav{display:none}
+  body[data-view="recorrido"] .topnav{display:flex;position:fixed;left:0;right:0;top:var(--top);margin:0;padding:6px 10px;gap:2px;background:#fffffff2;border-bottom:1px solid var(--faint);overflow-x:auto;z-index:39;scrollbar-width:none}
+  body[data-view="recorrido"] .topnav button{flex:none;padding:6px 10px}
+  .park-map{top:calc(var(--top) + 52px)}
+  .chapter:first-child{margin-top:calc(var(--top) + 26vh)}
+  .cmp-controls{top:calc(var(--top) + 38px)}
+  body[data-view="recorrido"] .switch{margin-left:auto}
+}
+@media (max-width:900px){
+  :root{--col:300px;--dockw:44px}
+  .cmp-charts{grid-template-columns:1fr}
+  .whatis{display:none}
+}
+@media (max-width:760px){
+  :root{--top:52px}
+  .brand .symbol{width:30px;height:30px}
+  /* SOLO en celular: en "Caminar el parque", lo participativo va arriba de todo */
+  body[data-view="recorrido"] #view-recorrido{display:flex;flex-direction:column}
+  #participa{order:-1;padding:110px var(--gutter) 40px}
+  #city{order:1} #park{order:2} #compara{order:3} .rec-foot{order:4}
+  .participa-inner{grid-template-columns:1fr;gap:16px}
+  .pm-frame{height:62svh;min-height:320px}
+  .sec-head{margin-bottom:18px}
+  .city-hello{padding-top:60px}
+  .city-legend{flex-direction:column;align-items:flex-start;gap:6px;border-radius:14px;left:12px;bottom:12px}
+  .zoom-ctrl{bottom:12px}
+
+  /* Parque: plano fijo arriba, íconos debajo, tarjetas que suben y pasan por debajo */
+  .park-stage{top:calc(var(--top) + 38px);height:56svh;z-index:11;border-bottom:1px solid var(--rule);box-shadow:0 10px 24px #00000010}
+  .park-map{left:10px;right:10px;top:8px;bottom:52px;border-radius:14px}
+  .park-map .minimap{display:none}
+  .dock{left:10px;right:10px;top:auto;bottom:8px;transform:none;flex-direction:row;justify-content:space-between;gap:3px;width:auto}
+  .dock button{width:auto;flex:1;height:36px;max-width:40px;border-radius:9px}
+  .dock button svg{width:17px;height:17px}
+  .dock button span{display:none}
+  .chapters{margin-top:0;padding:4svh var(--gutter) 0;width:auto;z-index:5}
+  .chapter{width:100%;margin:0 0 34svh}
+  .chapter:first-child{margin-top:0}
+  .chapter:last-child{margin-bottom:12svh}
+
+  #compara{padding:70px var(--gutter) 30px}
+  .cmp-controls{top:calc(var(--top) + 38px)}
+  .cmp-live{grid-template-columns:1fr 1fr;gap:8px}
+  .cmp-card{padding:12px;border-radius:14px}
+  .cmp-card h3{font-size:17px}
+  .cmp-metrics{grid-template-columns:1fr}
+  .cmp-metrics dd{font-size:20px}
+  .cmp-two{grid-template-columns:1fr}
+  .pbars li{grid-template-columns:96px 1fr}
+  .guide-card{left:16px !important;right:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  .veil{transition:none}
+  .guide-spot,.guide-card{transition:none}
+}
